@@ -43,11 +43,27 @@ def download_models():
                 print(f"Failed to download {model_name}. Please upload manually.")
 
 if __name__ == "__main__":
-    # Install PyTorch first (smaller Docker image)
-    install_pytorch()
+    import threading
+    import time
     
-    # Download models before starting server
+    def start_server():
+        """Start FastAPI server in background"""
+        time.sleep(5)  # Give healthcheck time to pass
+        os.system("python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT")
+    
+    # Start server in background thread
+    server_thread = threading.Thread(target=start_server, daemon=True)
+    server_thread.start()
+    
+    # Install PyTorch and download models in foreground
+    install_pytorch()
     download_models()
     
-    # Start FastAPI server
-    os.system("python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT")
+    print("Setup complete! Server is running...")
+    
+    # Keep main thread alive
+    try:
+        while True:
+            time.sleep(60)
+    except KeyboardInterrupt:
+        pass
