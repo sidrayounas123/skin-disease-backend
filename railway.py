@@ -43,27 +43,15 @@ def download_models():
                 print(f"Failed to download {model_name}. Please upload manually.")
 
 if __name__ == "__main__":
-    import threading
-    import time
+    print("Starting Railway deployment setup...")
     
-    def start_server():
-        """Start FastAPI server in background"""
-        time.sleep(5)  # Give healthcheck time to pass
-        os.system("python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT")
-    
-    # Start server in background thread
-    server_thread = threading.Thread(target=start_server, daemon=True)
-    server_thread.start()
-    
-    # Install PyTorch and download models in foreground
+    # Install PyTorch first
     install_pytorch()
+    
+    # Download models
     download_models()
     
-    print("Setup complete! Server is running...")
+    print("Setup complete! Starting FastAPI server...")
     
-    # Keep main thread alive
-    try:
-        while True:
-            time.sleep(60)
-    except KeyboardInterrupt:
-        pass
+    # Start FastAPI server
+    os.system("python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT")
