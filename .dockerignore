@@ -1,0 +1,30 @@
+# Exclude large model files from Docker build
+weights/
+*.pth
+*.pth
+
+# Virtual environment
+venv/
+env/
+__pycache__/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase credentials
+serviceAccountKey.json
+
+# Logs
+*.log
+
+# Test files
+test_*.py

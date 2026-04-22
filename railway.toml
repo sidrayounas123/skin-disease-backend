@@ -1,0 +1,19 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python railway.py"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[[services]]
+name = "api"
+source = "."
+memoryLimit = "512Mi"
+cpuLimit = "1000m"
+
+[variables]
+PYTHON_VERSION = "3.11"
+PORT = "8000"

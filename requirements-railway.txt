@@ -1,0 +1,16 @@
+# Ultra-lightweight requirements for Railway deployment
+# PyTorch will be downloaded separately to reduce image size
+
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+requests==2.31.0
+pydantic==2.4.2
+firebase-admin==6.1.0
+pillow==10.0.1
+numpy==1.24.2
+
+# PyTorch CPU - installed separately to reduce Docker image size
+# torch==2.0.1+cpu --index-url https://download.pytorch.org/whl/cpu
+# torchvision==0.15.2+cpu --index-url https://download.pytorch.org/whl/cpu
+# timm==0.9.7
