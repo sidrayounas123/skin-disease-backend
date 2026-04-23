@@ -2,18 +2,9 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
-import sys
-
-# Try to import ML modules, but handle gracefully if not available
-try:
-    from app.model1 import load_model1, predict1, CLASS_NAMES_1
-    from app.model2 import load_model2, predict2, CLASS_NAMES_2
-    from app.utils import preprocess_image
-    ML_AVAILABLE = True
-except ImportError as e:
-    print(f"ML modules not available: {e}")
-    ML_AVAILABLE = False
-
+from app.model1 import load_model1, predict1, CLASS_NAMES_1
+from app.model2 import load_model2, predict2, CLASS_NAMES_2
+from app.utils import preprocess_image
 from app.disease_info import DISEASE_INFO
 from app import firebase_service
 from app import auth_service
@@ -42,15 +33,8 @@ app.add_middleware(
 # Load models on startup
 @app.on_event("startup")
 async def startup_event():
-    if ML_AVAILABLE:
-        try:
-            load_model1()
-            load_model2()
-            print("ML models loaded successfully")
-        except Exception as e:
-            print(f"Failed to load ML models: {e}")
-    else:
-        print("ML modules not available - running in API-only mode")
+    load_model1()
+    load_model2()
 
 @app.get("/")
 async def root():
@@ -63,18 +47,11 @@ async def root():
 @app.get("/status")
 async def status():
     """Detailed status of both models"""
-    if not ML_AVAILABLE:
-        return {
-            "ml_available": False,
-            "message": "ML modules not installed - running in API-only mode"
-        }
-    
     model1_ready = os.path.exists("weights/model1.pth")
     model2_ready = os.path.exists("weights/model2.pth")
     model2_classes_configured = len(CLASS_NAMES_2) > 0
     
     return {
-        "ml_available": True,
         "model1": {
             "ready": model1_ready,
             "classes": CLASS_NAMES_1,
@@ -91,9 +68,6 @@ async def status():
 @app.post("/predict/dataset1")
 async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(None)):
     """Predict skin disease using Model 1 (Dataset 1)"""
-    if not ML_AVAILABLE:
-        raise HTTPException(status_code=503, detail="ML modules not available - PyTorch not installed")
-    
     try:
         # Validate file type
         if not file.content_type or not file.content_type.startswith('image/'):
@@ -153,9 +127,6 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
 @app.post("/predict/dataset2")
 async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(None)):
     """Predict skin disease using Model 2 (Dataset 2)"""
-    if not ML_AVAILABLE:
-        raise HTTPException(status_code=503, detail="ML modules not available - PyTorch not installed")
-    
     try:
         # Validate file type
         if not file.content_type or not file.content_type.startswith('image/'):
