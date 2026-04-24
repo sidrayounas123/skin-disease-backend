@@ -42,7 +42,7 @@ Thumbs.db
 serviceAccountKey.json
 *.json
 
-# Model weights (optional - comment out if you want to track)
+# Model weights
 weights/*.pth
 
 # Environment variables
