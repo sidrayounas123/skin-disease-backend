@@ -82,9 +82,16 @@ def load_model1():
     global _model1
     
     try:
+        # Get current working directory and construct absolute path
+        current_dir = os.getcwd()
+        model1_path = os.path.join(current_dir, "weights", "model1.pth")
+        print(f"Current working directory: {current_dir}")
+        print(f"Looking for Model 1 at: {model1_path}")
+        print(f"Model 1 file exists: {os.path.exists(model1_path)}")
+        
         # Check if weights file exists
-        if not os.path.exists("weights/model1.pth"):
-            print("Model 1 weights not found at weights/model1.pth")
+        if not os.path.exists(model1_path):
+            print(f"Model 1 weights not found at {model1_path}")
             return None
         
         # Initialize model
@@ -92,7 +99,7 @@ def load_model1():
         model.to(DEVICE)
         
         # Load weights
-        checkpoint = torch.load("weights/model1.pth", map_location=DEVICE)
+        checkpoint = torch.load(model1_path, map_location=DEVICE)
         model.load_state_dict(checkpoint)
         model.eval()
         

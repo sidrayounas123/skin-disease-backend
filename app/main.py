@@ -47,21 +47,28 @@ async def root():
 @app.get("/status")
 async def status():
     """Detailed status of both models"""
-    model1_ready = os.path.exists("weights/model1.pth")
-    model2_ready = os.path.exists("weights/model2.pth")
+    current_dir = os.getcwd()
+    model1_path = os.path.join(current_dir, "weights", "model1.pth")
+    model2_path = os.path.join(current_dir, "weights", "model2.pth")
+    
+    model1_ready = os.path.exists(model1_path)
+    model2_ready = os.path.exists(model2_path)
     model2_classes_configured = len(CLASS_NAMES_2) > 0
     
     return {
+        "working_directory": current_dir,
         "model1": {
+            "path": model1_path,
             "ready": model1_ready,
             "classes": CLASS_NAMES_1,
-            "message": "Ready" if model1_ready else "Add model1.pth to weights/ folder"
+            "message": "Ready" if model1_ready else f"Model 1 not found at {model1_path}"
         },
         "model2": {
+            "path": model2_path,
             "ready": model2_ready and model2_classes_configured,
             "classes": CLASS_NAMES_2,
             "message": "Ready" if (model2_ready and model2_classes_configured) 
-                      else "Add model2.pth to weights/ folder or update CLASS_NAMES_2 in model2.py"
+                      else f"Model 2 not found at {model2_path} or classes not configured"
         }
     }
 
@@ -74,8 +81,10 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
             raise HTTPException(status_code=400, detail="Invalid file type. Only images (jpg, png) are allowed.")
         
         # Check if model is ready
-        if not os.path.exists("weights/model1.pth"):
-            raise HTTPException(status_code=503, detail="Model 1 not available. Please upload model1.pth to the weights/ directory.")
+        current_dir = os.getcwd()
+        model1_path = os.path.join(current_dir, "weights", "model1.pth")
+        if not os.path.exists(model1_path):
+            raise HTTPException(status_code=503, detail=f"Model 1 not available at {model1_path}. Please upload model1.pth to the weights/ directory.")
         
         # Read and preprocess image
         file_bytes = await file.read()
@@ -137,8 +146,10 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
             raise HTTPException(status_code=503, detail="Model 2 classes not configured yet. Update CLASS_NAMES_2 in model2.py")
         
         # Check if model is ready
-        if not os.path.exists("weights/model2.pth"):
-            raise HTTPException(status_code=503, detail="Model 2 not available. Please upload model2.pth to the weights/ directory.")
+        current_dir = os.getcwd()
+        model2_path = os.path.join(current_dir, "weights", "model2.pth")
+        if not os.path.exists(model2_path):
+            raise HTTPException(status_code=503, detail=f"Model 2 not available at {model2_path}. Please upload model2.pth to the weights/ directory.")
         
         # Read and preprocess image
         file_bytes = await file.read()
