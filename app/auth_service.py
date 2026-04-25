@@ -21,7 +21,7 @@ def register_user(name, email, password):
     Returns user uid on success
     """
     if not FIREBASE_AVAILABLE:
-        return {"error": "Firebase not available - registration disabled"}
+        return {"error": "Firebase authentication not configured. Please add FIREBASE_CREDENTIALS environment variable in Hugging Face Space settings."}
     
     try:
         # Create user in Firebase Auth
@@ -49,7 +49,7 @@ def login_user(email, password):
     Returns user token and uid on success
     """
     if not FIREBASE_AVAILABLE:
-        return {"error": "Firebase not available - login disabled"}
+        return {"error": "Firebase authentication not configured. Please add FIREBASE_CREDENTIALS environment variable in Hugging Face Space settings."}
     
     try:
         url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_WEB_API_KEY}"
@@ -81,7 +81,7 @@ def get_user_profile(uid):
     Returns {name, email}
     """
     if not FIREBASE_AVAILABLE:
-        raise Exception("Firebase not available - profile retrieval disabled")
+        raise Exception("Firebase authentication not configured. Please add FIREBASE_CREDENTIALS environment variable in Hugging Face Space settings.")
     
     try:
         doc_ref = db.collection("users").document(uid)
