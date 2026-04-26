@@ -103,23 +103,21 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
     """Predict skin disease using Model 1 (Dataset 1)"""
     try:
         # Debug logging
-        print(f"Dataset1 - Received file: filename={file.filename}, content_type={file.content_type}")
+        filename = file.filename.lower().strip() if file.filename else ''
+        print(f"Dataset1 - filename: {filename}")
+        print(f"Dataset1 - content_type: {file.content_type}")
         
-        # Validate file type
-        allowed_extensions = {'jpg', 'jpeg', 'png'}
-        allowed_mime_types = {'image/jpeg', 'image/jpg', 'image/png'}
-        
-        # Check MIME type
-        if file.content_type and file.content_type not in allowed_mime_types:
-            print(f"Dataset1 - Invalid MIME type: {file.content_type}")
-            raise HTTPException(status_code=400, detail="Invalid file type. Only images (jpg, jpeg, png) are allowed.")
+        # Validate using filename extension only
+        allowed_extensions = {'.jpg', '.jpeg', '.png'}
         
         # Check file extension (case-insensitive)
-        if file.filename:
-            file_extension = file.filename.lower().split('.')[-1] if '.' in file.filename else ''
+        if filename:
+            file_extension = '.' + filename.split('.')[-1] if '.' in filename else ''
             if file_extension not in allowed_extensions:
                 print(f"Dataset1 - Invalid file extension: {file_extension}")
                 raise HTTPException(status_code=400, detail="Invalid file type. Only images (jpg, jpeg, png) are allowed.")
+        else:
+            raise HTTPException(status_code=400, detail="No filename provided. Only images (jpg, jpeg, png) are allowed.")
         
         print("Dataset1 - File validation passed - proceeding with prediction")
         
@@ -181,23 +179,21 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
     """Predict skin disease using Model 2 (Dataset 2)"""
     try:
         # Debug logging
-        print(f"Dataset2 - Received file: filename={file.filename}, content_type={file.content_type}")
+        filename = file.filename.lower().strip() if file.filename else ''
+        print(f"Dataset2 - filename: {filename}")
+        print(f"Dataset2 - content_type: {file.content_type}")
         
-        # Validate file type
-        allowed_extensions = {'jpg', 'jpeg', 'png'}
-        allowed_mime_types = {'image/jpeg', 'image/jpg', 'image/png'}
-        
-        # Check MIME type
-        if file.content_type and file.content_type not in allowed_mime_types:
-            print(f"Dataset2 - Invalid MIME type: {file.content_type}")
-            raise HTTPException(status_code=400, detail="Invalid file type. Only images (jpg, jpeg, png) are allowed.")
+        # Validate using filename extension only
+        allowed_extensions = {'.jpg', '.jpeg', '.png'}
         
         # Check file extension (case-insensitive)
-        if file.filename:
-            file_extension = file.filename.lower().split('.')[-1] if '.' in file.filename else ''
+        if filename:
+            file_extension = '.' + filename.split('.')[-1] if '.' in filename else ''
             if file_extension not in allowed_extensions:
                 print(f"Dataset2 - Invalid file extension: {file_extension}")
                 raise HTTPException(status_code=400, detail="Invalid file type. Only images (jpg, jpeg, png) are allowed.")
+        else:
+            raise HTTPException(status_code=400, detail="No filename provided. Only images (jpg, jpeg, png) are allowed.")
         
         print("Dataset2 - File validation passed - proceeding with prediction")
         
