@@ -17,31 +17,41 @@ app = FastAPI(title="Skin Disease Detection API", version="1.0.0")
 class RegisterRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     
+    # Support all name field formats
     name: str = Field(min_length=1, description="User full name")
+    full_name: str = Field(default=None, description="User full name (alternative)")
+    fullName: str = Field(default=None, description="User full name (alternative)")
     email: EmailStr = Field(description="Valid email address")
     password: str = Field(min_length=6, description="Password must be at least 6 characters")
     
-    @classmethod
-    def alias_generator(cls, field_name: str) -> str | None:
-        if field_name == "name":
-            return "full_name"  # Default alias
-        return None
-    
     @model_validator(mode='before')
     @classmethod
-    def extract_name_from_multiple_formats(cls, data: dict | Any) -> dict | Any:
+    def normalize_name_fields(cls, data: dict | Any) -> dict | Any:
         if isinstance(data, dict):
-            # Handle different name field formats
+            # Normalize all name fields to 'name'
+            normalized_name = None
+            
             if 'full_name' in data and data['full_name']:
-                data['name'] = data.pop('full_name')
+                normalized_name = data.pop('full_name')
             elif 'fullName' in data and data['fullName']:
-                data['name'] = data.pop('fullName')
+                normalized_name = data.pop('fullName')
             elif 'name' in data and data['name']:
-                # Keep name as is
-                pass
+                normalized_name = data['name']
+            
+            if normalized_name:
+                data['name'] = normalized_name
             else:
                 raise ValueError("Name field is required (full_name, fullName, or name)")
+                
+            # Clear any remaining name fields to avoid conflicts
+            data.pop('full_name', None)
+            data.pop('fullName', None)
+            
         return data
+    
+    def get_normalized_name(self) -> str:
+        """Get the normalized name value safely"""
+        return self.name
 
 class LoginRequest(BaseModel):
     email: str
@@ -245,6 +255,10 @@ async def register_user(request: RegisterRequest):
         # Print incoming request body
         print(f"Registration request received: {request.model_dump()}")
         
+        # Get normalized name safely
+        full_name = request.get_normalized_name()
+        print(f"Normalized name: {full_name}")
+        
         # Check if user already exists
         existing_users = auth_service.get_user_by_email(request.email)
         if existing_users:
@@ -255,8 +269,8 @@ async def register_user(request: RegisterRequest):
             )
         
         # Register user with Firebase
-        print(f"Creating new user: {request.full_name}, {request.email}")
-        result = auth_service.register_user(request.full_name, request.email, request.password)
+        print(f"Creating new user: {full_name}, {request.email}")
+        result = auth_service.register_user(full_name, request.email, request.password)
         
         if "error" in result:
             print(f"Registration failed: {result['error']}")
@@ -271,7 +285,7 @@ async def register_user(request: RegisterRequest):
             "success": True,
             "message": "Account created successfully",
             "user": {
-                "full_name": request.full_name,
+                "name": full_name,
                 "email": request.email
             }
         }
