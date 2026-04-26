@@ -15,39 +15,21 @@ app = FastAPI(title="Skin Disease Detection API", version="1.0.0")
 
 # Pydantic models for auth requests
 class RegisterRequest(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, extra='allow')
     
-    # Support all name field formats
+    # Primary field with aliases
     name: str = Field(min_length=1, description="User full name")
-    full_name: str = Field(default=None, description="User full name (alternative)")
-    fullName: str = Field(default=None, description="User full name (alternative)")
     email: EmailStr = Field(description="Valid email address")
     password: str = Field(min_length=6, description="Password must be at least 6 characters")
     
-    @model_validator(mode='before')
-    @classmethod
-    def normalize_name_fields(cls, data: dict | Any) -> dict | Any:
-        if isinstance(data, dict):
-            # Normalize all name fields to 'name'
-            normalized_name = None
-            
-            if 'full_name' in data and data['full_name']:
-                normalized_name = data.pop('full_name')
-            elif 'fullName' in data and data['fullName']:
-                normalized_name = data.pop('fullName')
-            elif 'name' in data and data['name']:
-                normalized_name = data['name']
-            
-            if normalized_name:
-                data['name'] = normalized_name
-            else:
-                raise ValueError("Name field is required (full_name, fullName, or name)")
-                
-            # Clear any remaining name fields to avoid conflicts
-            data.pop('full_name', None)
-            data.pop('fullName', None)
-            
-        return data
+    def __init__(self, **data):
+        # Handle different name field formats before validation
+        if 'full_name' in data:
+            data['name'] = data.pop('full_name')
+        elif 'fullName' in data:
+            data['name'] = data.pop('fullName')
+        
+        super().__init__(**data)
     
     def get_normalized_name(self) -> str:
         """Get the normalized name value safely"""
