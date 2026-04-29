@@ -1,11 +1,14 @@
+--index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://pypi.org/simple
+
 fastapi==0.111.0
 uvicorn==0.29.0
 python-multipart==0.0.9
-torch==2.2.0
-torchvision==0.17.0
+torch==2.2.0+cpu
+torchvision==0.17.0+cpu
 timm==0.9.16
-pillow==10.3.0
-numpy
+Pillow==10.3.0
+numpy==1.26.4
 firebase-admin==6.2.0
 requests==2.31.0
 pydantic==2.5.0

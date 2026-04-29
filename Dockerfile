@@ -10,6 +10,9 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Verify numpy installation
+RUN python -c "import numpy; print(numpy.__version__)"
+
 # Copy the application code
 COPY . .
 
