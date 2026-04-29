@@ -59,44 +59,30 @@ CLASS_NAMES_2 = [
     "TC (Tinea Corporis)"
 ]
 
-def load_model2():
-    """Load Model 2 from weights file"""
+def load_model2(weights_path: str = "weights/model2.pth"):
     global _model2
-    
-    try:
-        # Get current working directory and construct absolute path
-        current_dir = os.getcwd()
-        model2_path = os.path.join(current_dir, "weights", "model2.pth")
-        print(f"Current working directory: {current_dir}")
-        print(f"Looking for Model 2 at: {model2_path}")
-        print(f"Model 2 file exists: {os.path.exists(model2_path)}")
+    if _model2 is None:
+        import os
+        print(f"Looking for model2 at: {weights_path}")
+        print(f"Current directory: {os.getcwd()}")
+        print(f"Files in weights/: {os.listdir('weights/') if os.path.exists('weights/') else 'weights folder not found'}")
         
-        # Check if classes are configured
-        if len(CLASS_NAMES_2) == 0:
-            print("Model 2 classes not configured yet. Update CLASS_NAMES_2 in model2.py")
+        if not os.path.exists(weights_path):
+            print(f"model2.pth NOT FOUND at {weights_path}")
             return None
         
-        # Check if weights file exists
-        if not os.path.exists(model2_path):
-            print(f"Model 2 weights not found at {model2_path}")
+        try:
+            print(f"Loading model2...")
+            _model2 = DeiTWithSE(num_classes=len(CLASS_NAMES_2))
+            _model2.load_state_dict(torch.load(weights_path, map_location=DEVICE))
+            _model2.to(DEVICE)
+            _model2.eval()
+            print("Model 2 loaded successfully!")
+        except Exception as e:
+            print(f"Model 2 load error: {str(e)}")
+            _model2 = None
             return None
-        
-        # Initialize model
-        model = DeiTWithSE(num_classes=len(CLASS_NAMES_2))
-        model.to(DEVICE)
-        
-        # Load weights
-        checkpoint = torch.load(model2_path, map_location=DEVICE)
-        model.load_state_dict(checkpoint)
-        model.eval()
-        
-        _model2 = model
-        print("Model 2 loaded successfully")
-        return model
-        
-    except Exception as e:
-        print(f"Error loading Model 2: {e}")
-        return None
+    return _model2
 
 def predict2(image_tensor):
     """
