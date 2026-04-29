@@ -17,9 +17,21 @@ from app import auth_service
 async def lifespan(app: FastAPI):
     # Startup
     print("Loading models on startup...")
-    load_model1()
-    load_model2()
-    print("Models loaded successfully")
+    try:
+        load_model1()
+        print("Model 1 loading completed")
+    except Exception as e:
+        print(f"Error loading Model 1: {str(e)}")
+        print("Model 1 will be loaded on-demand")
+    
+    try:
+        load_model2()
+        print("Model 2 loading completed")
+    except Exception as e:
+        print(f"Error loading Model 2: {str(e)}")
+        print("Model 2 will be loaded on-demand")
+    
+    print("FastAPI application startup completed")
     yield
     # Shutdown (if needed)
     print("Application shutting down...")
@@ -79,8 +91,18 @@ app.add_middleware(
 async def root():
     """Basic health check endpoint"""
     return {
-        "message": "Backend is running",
-        "status": "healthy"
+        "message": "Skin Disease Detection API",
+        "status": "healthy",
+        "version": "1.0.0"
+    }
+
+@app.get("/test")
+async def test_endpoint():
+    """Simple test endpoint to verify API is working"""
+    return {
+        "message": "API is working correctly",
+        "timestamp": "test",
+        "status": "ok"
     }
 
 @app.get("/status")
