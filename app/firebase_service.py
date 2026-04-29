@@ -37,21 +37,58 @@ def save_scan(user_id, disease, confidence, severity, see_doctor, dataset):
     db.collection("scans").add(doc)
     return True
 
-def get_scans(user_id):
+def get_scans(user_id, filter_type=None):
     if not db:
         print("Firebase not available - returning empty scan history")
-        return []
+        return {"scans": [], "total": 0, "this_month": 0, "this_week": 0}
     
+    # Get all scans for user
     scans = db.collection("scans")\
               .where("user_id", "==", user_id)\
               .order_by("timestamp", direction=firestore.Query.DESCENDING)\
-              .limit(20)\
               .stream()
+    
     result = []
+    now = datetime.datetime.now()
+    one_week_ago = now - datetime.timedelta(days=7)
+    current_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+    this_month_count = 0
+    this_week_count = 0
+    
     for scan in scans:
         data = scan.to_dict()
         data["id"] = scan.id
+        
+        # Convert timestamp to ISO format
         if "timestamp" in data:
-            data["timestamp"] = data["timestamp"].isoformat()
+            timestamp = data["timestamp"]
+            if isinstance(timestamp, datetime.datetime):
+                data["timestamp"] = timestamp.isoformat()
+                
+                # Calculate statistics
+                if timestamp >= current_month_start:
+                    this_month_count += 1
+                if timestamp >= one_week_ago:
+                    this_week_count += 1
+        
+        # Determine if high risk
+        severity = data.get("severity", "").lower()
+        see_doctor = data.get("see_doctor", False)
+        is_high_risk = severity == "severe" or see_doctor
+        data["is_high_risk"] = is_high_risk
+        
+        # Apply filter if specified
+        if filter_type == "high_risk" and not is_high_risk:
+            continue
+        elif filter_type == "low_risk" and is_high_risk:
+            continue
+        
         result.append(data)
-    return result
+    
+    return {
+        "scans": result,
+        "total": len(result),
+        "this_month": this_month_count if not filter_type else sum(1 for scan in result if scan.get("timestamp")),
+        "this_week": this_week_count if not filter_type else sum(1 for scan in result if scan.get("timestamp"))
+    }

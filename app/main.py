@@ -279,16 +279,40 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
 @app.get("/scans/{user_id}")
-async def get_user_scans(user_id: str):
-    """Get all scans for a specific user"""
+async def get_user_scans(user_id: str, filter: str = Query(None, description="Filter scans: high_risk, low_risk")):
+    """Get detailed scan history for a specific user"""
     try:
-        scans = firebase_service.get_scans(user_id)
+        print(f"Retrieving scans for user: {user_id}, filter: {filter}")
+        
+        # Get scans with optional filtering
+        scan_data = firebase_service.get_scans(user_id, filter_type=filter)
+        
+        # Format scan data for Flutter
+        formatted_scans = []
+        for scan in scan_data["scans"]:
+            formatted_scan = {
+                "id": scan.get("id", ""),
+                "disease": scan.get("disease", "Unknown"),
+                "confidence": float(scan.get("confidence", 0)),
+                "severity": scan.get("severity", "Unknown"),
+                "see_doctor": bool(scan.get("see_doctor", False)),
+                "is_high_risk": bool(scan.get("is_high_risk", False)),
+                "dataset": scan.get("dataset", "unknown"),
+                "timestamp": scan.get("timestamp", "")
+            }
+            formatted_scans.append(formatted_scan)
+        
+        print(f"Returning {len(formatted_scans)} scans for user {user_id}")
+        
         return {
-            "user_id": user_id,
-            "scans": scans,
-            "total": len(scans)
+            "total": scan_data["total"],
+            "this_month": scan_data["this_month"],
+            "this_week": scan_data["this_week"],
+            "scans": formatted_scans
         }
+        
     except Exception as e:
+        print(f"Error retrieving scans: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to retrieve scans: {str(e)}")
 
 # Authentication endpoints
