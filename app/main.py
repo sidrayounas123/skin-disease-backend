@@ -156,63 +156,13 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
         if _model1 is None:
             raise HTTPException(status_code=503, detail="Model 1 not loaded. Please restart the application.")
         
-        # Read and preprocess image (optimized to 224x224)
-        file_bytes = await file.read()
+        # Read file with proper error handling
+        contents = await file.read()
+        print(f"Received {len(contents)} bytes")
+        if len(contents) == 0:
+            raise HTTPException(status_code=400, detail="Empty file received")
         
-        # STEP A: File validation already done above
-        
-        # STEP B: Read image safely and perform basic quality checks
-        try:
-            # Load image for quality checks
-            from PIL import Image
-            test_image = Image.open(io.BytesIO(file_bytes))
-            width, height = test_image.size
-            
-            print(f"Dataset1 - Image loaded: {file.filename}, size: {width}x{height}")
-            
-            # STEP C: Basic image quality checks only
-            # Reject only if obviously corrupted or unusable
-            if width < 100 or height < 100:
-                print(f"Dataset1 - Image too small: {width}x{height}")
-                return {
-                    "success": False,
-                    "message": "Image too small. Please upload a larger image (minimum 100x100 pixels)."
-                }
-            
-            # Check for fully black or white images
-            import numpy as np
-            img_array = np.array(test_image)
-            if img_array.size == 0:
-                print("Dataset1 - Empty image array")
-                return {
-                    "success": False,
-                    "message": "Invalid image format. Please upload a valid image file."
-                }
-            
-            # Check if image is fully black
-            if np.all(img_array == 0):
-                print("Dataset1 - Fully black image")
-                return {
-                    "success": False,
-                    "message": "Image appears to be completely black. Please upload a visible image."
-                }
-            
-            # Check if image is fully white (or very close to white)
-            if np.all(img_array >= 250):
-                print("Dataset1 - Fully white image")
-                return {
-                    "success": False,
-                    "message": "Image appears to be completely white. Please upload a visible image."
-                }
-            
-            test_image.close()
-            
-        except Exception as e:
-            print(f"Dataset1 - Error reading image: {str(e)}")
-            return {
-                "success": False,
-                "message": "Cannot decode image file. Please upload a valid image."
-            }
+        file_bytes = contents
         
         # STEP D: Preprocess and run disease model prediction first
         # Debug file_bytes content
@@ -340,63 +290,13 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         if _model2 is None:
             raise HTTPException(status_code=503, detail="Model 2 not loaded. Please restart the application.")
         
-        # Read and preprocess image (optimized to 224x224)
-        file_bytes = await file.read()
+        # Read file with proper error handling
+        contents = await file.read()
+        print(f"Received {len(contents)} bytes")
+        if len(contents) == 0:
+            raise HTTPException(status_code=400, detail="Empty file received")
         
-        # STEP A: File validation already done above
-        
-        # STEP B: Read image safely and perform basic quality checks
-        try:
-            # Load image for quality checks
-            from PIL import Image
-            test_image = Image.open(io.BytesIO(file_bytes))
-            width, height = test_image.size
-            
-            print(f"Dataset2 - Image loaded: {file.filename}, size: {width}x{height}")
-            
-            # STEP C: Basic image quality checks only
-            # Reject only if obviously corrupted or unusable
-            if width < 100 or height < 100:
-                print(f"Dataset2 - Image too small: {width}x{height}")
-                return {
-                    "success": False,
-                    "message": "Image too small. Please upload a larger image (minimum 100x100 pixels)."
-                }
-            
-            # Check for fully black or white images
-            import numpy as np
-            img_array = np.array(test_image)
-            if img_array.size == 0:
-                print("Dataset2 - Empty image array")
-                return {
-                    "success": False,
-                    "message": "Invalid image format. Please upload a valid image file."
-                }
-            
-            # Check if image is fully black
-            if np.all(img_array == 0):
-                print("Dataset2 - Fully black image")
-                return {
-                    "success": False,
-                    "message": "Image appears to be completely black. Please upload a visible image."
-                }
-            
-            # Check if image is fully white (or very close to white)
-            if np.all(img_array >= 250):
-                print("Dataset2 - Fully white image")
-                return {
-                    "success": False,
-                    "message": "Image appears to be completely white. Please upload a visible image."
-                }
-            
-            test_image.close()
-            
-        except Exception as e:
-            print(f"Dataset2 - Error reading image: {str(e)}")
-            return {
-                "success": False,
-                "message": "Cannot decode image file. Please upload a valid image."
-            }
+        file_bytes = contents
         
         # STEP D: Preprocess and run disease model prediction first
         try:
