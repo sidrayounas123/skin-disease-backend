@@ -145,7 +145,7 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
         if not is_skin:
             print(f"Dataset1 - Non-skin image detected (confidence: {skin_confidence:.3f})")
             return {
-                "success": false,
+                "success": False,
                 "message": "Non-skin image detected. Please upload a clear skin disease image."
             }
         
@@ -189,7 +189,7 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
         if confidence < MIN_CONFIDENCE:
             print(f"Dataset1 - Low confidence ({confidence}%) - prediction uncertain")
             return {
-                "success": false,
+                "success": False,
                 "message": "Prediction uncertain. Please upload clearer skin image."
             }
         
@@ -220,7 +220,7 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
             if not is_likely_skin:
                 print(f"Dataset1 - Image appears to be non-skin related")
                 return {
-                    "success": false,
+                    "success": False,
                     "message": "Irrelevant image. Please upload a clear skin disease image."
                 }
                 
@@ -250,7 +250,7 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
         
         # Format standardized response
         return {
-            "success": true,
+            "success": True,
             "predicted_disease": class_name,
             "confidence_percent": round(confidence * 100, 2),
             "severity": info["severity"],
@@ -313,7 +313,7 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         if not is_skin:
             print(f"Dataset2 - Non-skin image detected (confidence: {skin_confidence:.3f})")
             return {
-                "success": false,
+                "success": False,
                 "message": "Non-skin image detected. Please upload a clear skin disease image."
             }
         
@@ -357,7 +357,7 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         if confidence < MIN_CONFIDENCE:
             print(f"Dataset2 - Low confidence ({confidence}%) - prediction uncertain")
             return {
-                "success": false,
+                "success": False,
                 "message": "Prediction uncertain. Please upload clearer skin image."
             }
         
@@ -388,7 +388,7 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
             if not is_likely_skin:
                 print(f"Dataset2 - Image appears to be non-skin related")
                 return {
-                    "success": false,
+                    "success": False,
                     "message": "Irrelevant image. Please upload a clear skin disease image."
                 }
                 
@@ -418,7 +418,7 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         
         # Format standardized response
         return {
-            "success": true,
+            "success": True,
             "predicted_disease": class_name,
             "confidence_percent": round(confidence * 100, 2),
             "severity": info["severity"],
