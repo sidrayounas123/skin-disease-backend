@@ -106,7 +106,12 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
         start_time = time.time()
         
         print(f"Dataset1 - Request received for file: {file.filename}")
-        
+        Audit my skin disease backend model API. Currently every uploaded image gets classified into one disease class even if image is irrelevant (clothes, objects, random backgrounds). Add irrelevant image detection and reject non-skin images with response:
+{
+ "success": false,
+ "message": "Irrelevant image. Please upload a clear skin disease image."
+}
+Use confidence threshold and image validation.
         # Debug logging
         filename = file.filename.lower().strip() if file.filename else ''
         print(f"Dataset1 - filename: {filename}")
@@ -145,6 +150,51 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
             raise HTTPException(status_code=500, detail=result["error"])
         
         class_name, confidence, all_probs = result
+        
+        # Validate confidence threshold and image relevance
+        MIN_CONFIDENCE = 30.0  # Minimum 30% confidence required
+        
+        if confidence < MIN_CONFIDENCE:
+            print(f"Dataset1 - Low confidence ({confidence}%) - rejecting as irrelevant image")
+            return {
+                "success": False,
+                "message": "Irrelevant image. Please upload a clear skin disease image with confidence above 30%."
+            }
+        
+        # Basic image content analysis (simple heuristic)
+        try:
+            # Read image for basic analysis
+            from PIL import Image
+            image = Image.open(io.BytesIO(file_bytes))
+            
+            # Check if image is likely skin-related
+            # This is a basic heuristic - can be enhanced with proper ML models
+            is_likely_skin = True  # Default to True for now
+            
+            # Simple checks for obviously non-skin content
+            # (This can be expanded with more sophisticated analysis)
+            if image.mode not in ['RGB', 'RGBA']:
+                is_likely_skin = False
+                print(f"Dataset1 - Non-RGB image mode: {image.mode}")
+            
+            # Size check - very small or very large images might be irrelevant
+            width, height = image.size
+            if width < 100 or height < 100 or width > 2000 or height > 2000:
+                is_likely_skin = False
+                print(f"Dataset1 - Suspicious image size: {width}x{height}")
+            
+            image.close()
+            
+            if not is_likely_skin:
+                print(f"Dataset1 - Image appears to be non-skin related")
+                return {
+                    "success": False,
+                    "message": "Irrelevant image. Please upload a clear skin disease image."
+                }
+                
+        except Exception as e:
+            print(f"Dataset1 - Error during image analysis: {str(e)}")
+            # Continue with prediction even if analysis fails
         
         # Get disease information
         disease_key = class_name
@@ -237,6 +287,51 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
             raise HTTPException(status_code=500, detail=result["error"])
         
         class_name, confidence, all_probs = result
+        
+        # Validate confidence threshold and image relevance
+        MIN_CONFIDENCE = 30.0  # Minimum 30% confidence required
+        
+        if confidence < MIN_CONFIDENCE:
+            print(f"Dataset2 - Low confidence ({confidence}%) - rejecting as irrelevant image")
+            return {
+                "success": False,
+                "message": "Irrelevant image. Please upload a clear skin disease image with confidence above 30%."
+            }
+        
+        # Basic image content analysis (simple heuristic)
+        try:
+            # Read image for basic analysis
+            from PIL import Image
+            image = Image.open(io.BytesIO(file_bytes))
+            
+            # Check if image is likely skin-related
+            # This is a basic heuristic - can be enhanced with proper ML models
+            is_likely_skin = True  # Default to True for now
+            
+            # Simple checks for obviously non-skin content
+            # (This can be expanded with more sophisticated analysis)
+            if image.mode not in ['RGB', 'RGBA']:
+                is_likely_skin = False
+                print(f"Dataset2 - Non-RGB image mode: {image.mode}")
+            
+            # Size check - very small or very large images might be irrelevant
+            width, height = image.size
+            if width < 100 or height < 100 or width > 2000 or height > 2000:
+                is_likely_skin = False
+                print(f"Dataset2 - Suspicious image size: {width}x{height}")
+            
+            image.close()
+            
+            if not is_likely_skin:
+                print(f"Dataset2 - Image appears to be non-skin related")
+                return {
+                    "success": False,
+                    "message": "Irrelevant image. Please upload a clear skin disease image."
+                }
+                
+        except Exception as e:
+            print(f"Dataset2 - Error during image analysis: {str(e)}")
+            # Continue with prediction even if analysis fails
         
         # Get disease information
         disease_key = class_name
