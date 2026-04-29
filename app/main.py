@@ -10,6 +10,7 @@ from app.utils import preprocess_image
 from app.disease_info import DISEASE_INFO
 from app import firebase_service
 from app import auth_service
+from app.skin_detector import is_skin_image, preprocess_for_skin_detection
 
 app = FastAPI(title="Skin Disease Detection API", version="1.0.0")
 
@@ -137,7 +138,21 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
         file_bytes = await file.read()
         image_tensor = preprocess_image(file_bytes)
         
-        # Make prediction (model already loaded)
+        # First-stage: Skin vs Non-skin image detection
+        print("Dataset1 - Performing skin detection...")
+        is_skin, skin_confidence = is_skin_image(image_tensor, threshold=0.6)
+        
+        if not is_skin:
+            print(f"Dataset1 - Non-skin image detected (confidence: {skin_confidence:.3f})")
+            return {
+                "success": false,
+                "message": "Non-skin image detected. Please upload a clear skin disease image."
+            }
+        
+        print(f"Dataset1 - Skin image confirmed (confidence: {skin_confidence:.3f})")
+        
+        # Second-stage: Disease classification
+        print("Dataset1 - Performing disease classification...")
         result = predict1(image_tensor)
         
         print("Dataset1 - Prediction finished")
@@ -291,7 +306,21 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         file_bytes = await file.read()
         image_tensor = preprocess_image(file_bytes)
         
-        # Make prediction (model already loaded)
+        # First-stage: Skin vs Non-skin image detection
+        print("Dataset2 - Performing skin detection...")
+        is_skin, skin_confidence = is_skin_image(image_tensor, threshold=0.6)
+        
+        if not is_skin:
+            print(f"Dataset2 - Non-skin image detected (confidence: {skin_confidence:.3f})")
+            return {
+                "success": false,
+                "message": "Non-skin image detected. Please upload a clear skin disease image."
+            }
+        
+        print(f"Dataset2 - Skin image confirmed (confidence: {skin_confidence:.3f})")
+        
+        # Second-stage: Disease classification
+        print("Dataset2 - Performing disease classification...")
         result = predict2(image_tensor)
         
         print("Dataset2 - Prediction finished")
