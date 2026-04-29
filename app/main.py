@@ -215,6 +215,11 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = Query(No
             }
         
         # STEP D: Preprocess and run disease model prediction first
+        # Debug file_bytes content
+        print(f"File size: {len(file_bytes)} bytes")
+        print(f"File content type: {file.content_type}")
+        print(f"First 20 bytes: {file_bytes[:20]}")
+        
         try:
             image_tensor = preprocess_image(file_bytes)
         except ValueError as e:
