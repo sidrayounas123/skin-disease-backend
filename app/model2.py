@@ -51,13 +51,12 @@ class DeiTWithSE(nn.Module):
 # Global variables
 _model2 = None
 CLASS_NAMES_2 = [
-    "Acne",
-    "Actinic Keratosis", 
-    "Basal Cell Carcinoma", "Chickenpox",
-    "Dermato Fibroma", "Dyshidrotic Eczema", "Melanoma",
-    "Nail Fungus", "Nevus", "Normal Skin",
-    "Pigmented Benign Keratosis", "Ringworm",
-    "Seborrheic Keratosis", "Squamous Cell Carcinoma", "Vascular Lesion"
+    "AD (Atopic Dermatitis)",
+    "CD (Contact Dermatitis)", 
+    "EC (Eczema)",
+    "SC (Scabies)",
+    "SD (Seborrheic Dermatitis)",
+    "TC (Tinea Corporis)"
 ]
 
 def load_model2():
