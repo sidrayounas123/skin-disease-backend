@@ -150,6 +150,18 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = None):
     except Exception as e:
         raise HTTPException(500, f"Prediction failed: {str(e)}")
     
+    confidence_percent = round(confidence * 100, 2)
+    
+    # Check if confidence is less than 50% for irrelevant image detection
+    if confidence_percent < 50:
+        return {
+            "success": False,
+            "predicted_disease": "Unknown",
+            "message": "Image does not appear to be a skin condition. Please upload a clear skin image.",
+            "confidence_percent": confidence_percent,
+            "is_valid_skin_image": False
+        }
+    
     info = DISEASE_INFO.get(disease, {
         "severity": "Unknown",
         "severity_score": 0,
@@ -171,11 +183,12 @@ async def predict_dataset1(file: UploadFile = File(...), user_id: str = None):
     return {
         "success": True,
         "predicted_disease": disease,
-        "confidence_percent": round(confidence * 100, 2),
+        "confidence_percent": confidence_percent,
         "severity": info["severity"],
         "description": info["description"],
         "precautions": info["precautions"],
-        "initial_treatment": info["initial_treatment"]
+        "initial_treatment": info["initial_treatment"],
+        "is_valid_skin_image": True
     }
 
 @app.post("/predict/dataset2")
@@ -267,16 +280,21 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         print(f"  Response time: {prediction_time}ms")
         
         # STEP F: Relevance logic - confidence-based rejection only
-        MIN_CONFIDENCE = 35.0  # Minimum 35% confidence required
+        MIN_CONFIDENCE = 50.0  # Minimum 50% confidence required
         
-        if confidence < MIN_CONFIDENCE:
-            print(f"Dataset2 - Low confidence ({confidence:.2f}%) - rejecting as irrelevant image")
+        confidence_percent = round(confidence * 100, 2)
+        
+        if confidence_percent < 50:
+            print(f"Dataset2 - Low confidence ({confidence_percent:.2f}%) - rejecting as irrelevant image")
             return {
                 "success": False,
-                "message": "Irrelevant image detected. Please upload a clear skin disease image."
+                "predicted_disease": "Unknown",
+                "message": "Image does not appear to be a skin condition. Please upload a clear skin image.",
+                "confidence_percent": confidence_percent,
+                "is_valid_skin_image": False
             }
         
-        print(f"Dataset2 - Confidence acceptable ({confidence:.2f}%) - proceeding with result")
+        print(f"Dataset2 - Confidence acceptable ({confidence_percent:.2f}%) - proceeding with result")
         
         # Get disease information
         disease_key = class_name
@@ -302,7 +320,7 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         return {
             "success": True,
             "predicted_disease": class_name,
-            "confidence_percent": round(confidence * 100, 2),
+            "confidence_percent": confidence_percent,
             "severity": info["severity"],
             "description": info["description"],
             "precautions": info["precautions"],
@@ -310,7 +328,8 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
             "all_probabilities": {
                 CLASS_NAMES_2[i]: round(all_probs[i] * 100, 2)
                 for i in range(len(CLASS_NAMES_2))
-            }
+            },
+            "is_valid_skin_image": True
         }
         
     except HTTPException:
