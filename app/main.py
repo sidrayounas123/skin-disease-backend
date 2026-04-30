@@ -332,7 +332,7 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
         processing_time = round((time.time() - start_time) * 1000, 2)
         print(f"Dataset2 - Response sent in {processing_time}ms")
         
-        # Format standardized response
+        # Format standardized response matching dataset1 format
         return {
             "success": True,
             "predicted_disease": class_name,
@@ -341,10 +341,6 @@ async def predict_dataset2(file: UploadFile = File(...), user_id: str = Query(No
             "description": info["description"],
             "precautions": info["precautions"],
             "initial_treatment": info["initial_treatment"],
-            "all_probabilities": {
-                CLASS_NAMES_2[i]: round(all_probs[i] * 100, 2)
-                for i in range(len(CLASS_NAMES_2))
-            },
             "is_valid_skin_image": True
         }
         
