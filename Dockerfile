@@ -16,8 +16,8 @@ RUN python -c "import numpy; print(numpy.__version__)"
 # Copy the application code
 COPY . .
 
-# Create weights directory if it doesn't exist
-RUN mkdir -p weights
+# Copy weights directory with model files
+COPY weights/ ./weights/
 
 # Expose port 7860 for Hugging Face Spaces
 EXPOSE 7860
