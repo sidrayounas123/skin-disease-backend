@@ -5,6 +5,8 @@ from contextlib import asynccontextmanager
 import os
 import re
 from typing import Any
+from PIL import Image
+import io
 from app.model1 import load_model1, predict1, CLASS_NAMES_1
 from app.model2 import load_model2, predict2, CLASS_NAMES_2
 from app.utils import preprocess_image
