@@ -418,5 +418,145 @@ DISEASE_INFO = {
             "Surgical excision for large lesions"
         ],
         "see_doctor": True
+    },
+    "Eczema": {
+        "severity": "Moderate",
+        "severity_score": 4,
+        "description": "Chronic condition causing dry, itchy, inflamed skin patches",
+        "precautions": [
+            "Keep skin well-moisturized",
+            "Avoid harsh soaps and hot water",
+            "Use fragrance-free products",
+            "Wear soft, non-irritating clothing",
+            "Manage stress levels",
+            "Avoid known triggers"
+        ],
+        "initial_treatment": [
+            "Apply emollients regularly",
+            "Use topical corticosteroids",
+            "Take antihistamines for itching",
+            "Use wet wrap therapy for severe cases"
+        ],
+        "see_doctor": True
+    },
+    "Psoriasis": {
+        "severity": "Moderate",
+        "severity_score": 5,
+        "description": "Autoimmune condition causing red, scaly patches on skin",
+        "precautions": [
+            "Keep skin moisturized",
+            "Avoid skin injuries and scratches",
+            "Manage stress levels",
+            "Avoid alcohol and smoking",
+            "Maintain healthy weight",
+            "Protect skin from extreme weather"
+        ],
+        "initial_treatment": [
+            "Use topical corticosteroids",
+            "Apply vitamin D analogues",
+            "Use phototherapy as prescribed",
+            "Take systemic medications for severe cases"
+        ],
+        "see_doctor": True
+    },
+    "Rosacea": {
+        "severity": "Moderate",
+        "severity_score": 4,
+        "description": "Chronic skin condition causing redness and visible blood vessels",
+        "precautions": [
+            "Avoid sun exposure and extreme temperatures",
+            "Identify and avoid triggers (spicy foods, alcohol)",
+            "Use gentle skincare products",
+            "Protect skin with broad-spectrum sunscreen",
+            "Avoid harsh scrubbing",
+            "Manage stress levels"
+        ],
+        "initial_treatment": [
+            "Use topical antibiotics or metronidazole",
+            "Apply brimonidine gel for redness",
+            "Take oral antibiotics for inflammatory cases",
+            "Use gentle, non-irritating cleansers"
+        ],
+        "see_doctor": True
+    },
+    "Fungal Infection": {
+        "severity": "Mild",
+        "severity_score": 3,
+        "description": "Infection caused by fungi affecting skin, hair, or nails",
+        "precautions": [
+            "Keep skin clean and dry",
+            "Avoid sharing personal items",
+            "Wear breathable clothing",
+            "Use separate towels for affected areas",
+            "Treat infected pets promptly",
+            "Avoid walking barefoot in shared areas"
+        ],
+        "initial_treatment": [
+            "Apply over-the-counter antifungal creams",
+            "Keep affected area clean and dry",
+            "Use antifungal powders in shoes and socks",
+            "Continue treatment for 2-4 weeks after clearance"
+        ],
+        "see_doctor": False
+    },
+    "Bacterial Infection": {
+        "severity": "Moderate",
+        "severity_score": 5,
+        "description": "Infection caused by bacteria entering skin through cuts or breaks",
+        "precautions": [
+            "Keep wounds clean and covered",
+            "Practice good hand hygiene",
+            "Avoid sharing personal items",
+            "Treat cuts and scrapes promptly",
+            "Avoid scratching affected areas",
+            "Keep skin moisturized to prevent cracks"
+        ],
+        "initial_treatment": [
+            "Clean area with antiseptic solution",
+            "Apply antibiotic ointment",
+            "Keep area covered with clean bandage",
+            "Take oral antibiotics for severe infections"
+        ],
+        "see_doctor": True
+    },
+    "Allergic Reaction": {
+        "severity": "Mild",
+        "severity_score": 3,
+        "description": "Skin reaction to allergens causing rash, itching, or swelling",
+        "precautions": [
+            "Identify and avoid known allergens",
+            "Use hypoallergenic products",
+            "Test new products on small skin areas",
+            "Keep skin moisturized",
+            "Wear protective clothing",
+            "Maintain detailed allergy diary"
+        ],
+        "initial_treatment": [
+            "Apply calamine lotion for itching",
+            "Take oral antihistamines",
+            "Use cold compresses for swelling",
+            "Apply hydrocortisone cream for inflammation"
+        ],
+        "see_doctor": False
+    },
+    "Dermatitis": {
+        "severity": "Moderate",
+        "severity_score": 4,
+        "description": "General inflammation of skin causing redness, itching, and rash",
+        "precautions": [
+            "Avoid known irritants and allergens",
+            "Use gentle, fragrance-free products",
+            "Keep skin well-moisturized",
+            "Wear soft, breathable clothing",
+            "Avoid excessive washing",
+            "Protect skin from extreme temperatures"
+        ],
+        "initial_treatment": [
+            "Apply topical corticosteroids",
+            "Use moisturizers containing ceramides",
+            "Take antihistamines for itching",
+            "Use cool compresses to reduce inflammation"
+        ],
+        "see_doctor": True
     }
 }
